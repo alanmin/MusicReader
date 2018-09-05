@@ -23,6 +23,31 @@ def resize_img(img, width = 800) :
 			interpolation = cv2.INTER_CUBIC))
 
 
+#Returns a thresholded image, where 0's represent where ink is. 255 for white space
+#Uses the adaptive threshold function in cv2
+def threshold_img(img) :
+	img = resize_img(img)
+	print(img.shape)
+	img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	#j, thresh = cv2.threshold(img_grey, get_threshold(img_grey, img_thresholds[i]),
+	#	255,cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	thresh = cv2.adaptiveThreshold(img_grey, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+		cv2.THRESH_BINARY, 255, 15)
+	return(thresh)
+
+#Takes the thresholded image and finds locations where the 0's are.
+#Returns values of [x, y] in a list
+def black_pixel_locations(thresh) :
+	img_h, img_w, junk = thresh.shape
+	locs = []
+	for(x in range(img_w) :
+		for(y in range(img_h) :
+			if(img[x,y] == 0) :
+				locs.append([x,y])
+	return(locs)
+			
+
+	
 
 img_names = ['img_0001.png', 'img_0002.jpeg', 'img_0003.jpg']
 img_thresholds = [.08, .08, .08]
@@ -35,9 +60,11 @@ for i in range(len(img_names)) :
 	img = resize_img(img)
 	print(img.shape)
 	img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	j, thresh = cv2.threshold(img_grey, get_threshold(img_grey, img_thresholds[i]),
-		255,cv2.THRESH_BINARY)
+	#j, thresh = cv2.threshold(img_grey, get_threshold(img_grey, img_thresholds[i]),
+	#	255,cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	thresh = cv2.adaptiveThreshold(img_grey, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 255, 15)
 	cv2.imshow(name, thresh)
+	print(thresh)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
